@@ -78,7 +78,3 @@ Welcome to the IELTS Speaking Test Simulator App! This application is designed t
 - Soundfile
 - Google Generative AI
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
