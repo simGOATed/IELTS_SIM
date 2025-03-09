@@ -25,7 +25,7 @@ class GUI(tk.Tk):
             )
         )
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.interview_handler = InterviewHandler()
+        self.interview_handler = None
         self.eval_model = TextGen(mode='eval')
         self.mode = ""
         self.section = ""
@@ -45,6 +45,7 @@ class GUI(tk.Tk):
             button.pack()
 
     def select_option(self, option):
+        self.interview_handler = InterviewHandler()
         self.mode = option
         if option == "Practice Mode":
             self.show_practice_menu()
@@ -67,6 +68,7 @@ class GUI(tk.Tk):
         back_button.pack(pady=10)
 
     def practice_option_selected(self, option):
+        self.interview_handler = InterviewHandler()
         self.section = option
         self.interview_handler.set_section(option)
         self.ask_questions()
@@ -155,7 +157,7 @@ class GUI(tk.Tk):
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font('Courier', 'B', 16)
-        pdf.cell(40, 10, text)
+        pdf.multi_cell(0, 10, text)
         pdf.output('test_feedback.pdf', 'F')
 
     def clear_widgets(self):

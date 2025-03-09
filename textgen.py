@@ -1,9 +1,16 @@
+import os
 import google.generativeai as genai
 
 
 class TextGen:
-    def __init__(self, mode='chat_intro'):
-        genai.configure(api_key = "AIzaSyBEnq-XO7cNHs8byP7ZNkkT1x0R2vHslpg")
+    def __init__(self, mode='chat_intro', time_limit=0):
+        api_key = os.getenv("GENAI_API_KEY")
+        if not api_key:
+            raise ValueError("API key not found. Please set the GENAI_API_KEY environment variable.")
+        genai.configure(api_key=api_key)
+        self.time_limit = time_limit
+        self.model = None
+        self.chat = None
         self.setup_model(mode)
 
     def setup_model(self, mode):
@@ -21,6 +28,7 @@ class TextGen:
             self.chat = self.model.start_chat()
         elif mode == 'eval':
             self.model = self.initialize_model_eval()
+            self.chat = None  # Fix: Initialize self.chat to None for 'eval' mode
 
     def initialize_model_chat_intro(self):
         return genai.GenerativeModel(model_name = "gemini-1.5-flash",
@@ -29,7 +37,8 @@ class TextGen:
                                                           "IELTS spoken test format and give opportunities for the "
                                                           "examinee to show their capabilities in spoken English. "
                                                           "After each response from the examinee, you will be shown how "
-                                                          "much time has elapsed in the round. After 2 minutes have "
+                                                          f"much time has elapsed in the round. After "
+                                                          f"{self.time_limit} seconds have "
                                                           "passed, wrap up the conversation. Do not include unnecessary "
                                                           "punctuation in your responses. Do not ask for ID at the start. "
                                                           "Instead, introduce yourself (you're a lady) and ask the "
@@ -67,7 +76,8 @@ class TextGen:
                                                           "arguments. Provide prompts and follow-up questions to keep "
                                                           "the conversation flowing. After each response from the "
                                                           "examinee, you will be shown how much time has elapsed in "
-                                                          "the round. After 2 minutes have passed, wrap up the "
+                                                          f"the round. After {self.time_limit} seconds have "
+                                                          f"passed, wrap up the "
                                                           "conversation and thank the examinee for participating."
                                                           "Do not include unnecessary punctuation in your responses. "
                                                           "Keep in mind that responses by examinees are transcribed "
@@ -98,7 +108,8 @@ class TextGen:
                                                           "topic talked about in part 2. Encourage them to express "
                                                           "their ideas, opinions, and arguments. Provide prompts "
                                                           "and follow-up questions to keep the conversation flowing."
-                                                          "6 minutes after the start of the test, make sure you "
+                                                          f"{self.time_limit} seconds  after the start of the test, "
+                                                          f"make sure you "
                                                           "wrap up the conversation and thank the examinee for "
                                                           "participating. Make sure not to  include unnecessary "
                                                           "punctuation in your responses."
@@ -123,6 +134,7 @@ class TextGen:
                                                           "criterion, then give an overall estimated band.")
 
     def conversation(self, message):
+        print(message)
         response = self.chat.send_message(message, stream = False)
         return response.text
 

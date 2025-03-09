@@ -34,14 +34,14 @@ class InterviewHandler:
     def set_section(self, section):
         self.current_section = section
         if section == "Introduction":
-            self.chat_model = TextGen(mode='chat_intro')
+            self.chat_model = TextGen(mode='chat_intro', time_limit = self.time_limit)
         elif section == "Long Turn":
-            self.chat_model = TextGen(mode='chat_long_turn')
+            self.chat_model = TextGen(mode='chat_long_turn', time_limit = self.time_limit)
         elif section == "Two-Way Discussion":
-            self.chat_model = TextGen(mode='chat_discussion')
+            self.chat_model = TextGen(mode='chat_discussion', time_limit = self.time_limit)
         elif section == "Test":
-            self.chat_model = TextGen(mode = 'chat_test')
             self.time_limit = 360
+            self.chat_model = TextGen(mode = 'chat_test', time_limit = self.time_limit)
 
         self.question = self.chat_model.conversation('Hello')
         self.questions.append(self.question)
@@ -78,7 +78,8 @@ class InterviewHandler:
     def handle_post_transcription(self):
         if self.stopped:
             self.stream.stop()
-            self.question = self.chat_model.conversation(f'{self.answers[self.question_index]} [{self.delta} seconds have elapsed]')
+            self.question = self.chat_model.conversation(f'{self.answers[self.question_index]} '
+                                                         f'[{round(self.delta, 2)} seconds have elapsed]')
             self.questions.append(self.question)
             self.next_ready = True
 
